@@ -37,6 +37,17 @@ pub fn handle_delete_request(mut stream: TcpStream, path: &str) {
 }
 
 // Function to handle invalid requests
-pub fn handle_invalid_request(mut stream: TcpStream) {
+pub fn handle_invalid_request(mut stream: TcpStream, path: &str) {
     // Implement logic to handle invalid requests and send appropriate response
+    let content = fs::read_to_string(path).unwrap(); 
+    let response = format!(
+        "{}\r\nContent-Length: {}\r\n\r\n{}",
+        "HTTP/1.1 200 OK",
+        content.len(),
+        content
+    );
+
+    // write the response to the stream
+    stream.write(response.as_bytes()).unwrap(); 
+    stream.flush().unwrap(); // flush the stream to ensure all data is sent
 }

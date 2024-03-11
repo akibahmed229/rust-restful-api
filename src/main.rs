@@ -2,18 +2,20 @@ use std::net::{TcpListener, TcpStream}; // listens for incoming TCP connections
 use std::io::prelude::*; // brings in the read and write traits
 
 // custom modules
-use server::ThreadPool; // file system module
+use crate::lib::lib::ThreadPool; // file system module
 use router::router::HttpMethod;
 use router::router::parse_request;
 use crate::controllers::controller::{handle_delete_request, handle_get_request, handle_invalid_request, handle_post_request, handle_put_request};
 
+mod lib {
+    pub mod lib;
+}
 mod router {
     pub mod router;
 }
 mod controllers {
     pub mod controller;
 }
-
 
 fn main() {
     // bind to the address and port and start listening for incoming connections
@@ -45,7 +47,7 @@ fn handle_connecton(mut stream: TcpStream) {
        HttpMethod::POST => handle_post_request(stream, path, &buffer),
        HttpMethod::PUT => handle_put_request(stream, path, &buffer),
        HttpMethod::DELETE => handle_delete_request(stream, path),
-       _ => handle_invalid_request(stream)
+       _ => handle_invalid_request(stream, path)
     }
    
    println!(
