@@ -1,3 +1,9 @@
+/*
+    This module contains the logic to handle different HTTP requests.
+    It provides functions to handle GET, POST, PUT, DELETE, and invalid requests.
+    Each function takes a TcpStream and a path as input, and returns the appropriate response.
+*/
+
 #![allow(unused)]
 
 use std::net::{TcpListener, TcpStream}; // listens for incoming TCP connections

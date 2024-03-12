@@ -1,3 +1,7 @@
+/*
+    Router module to parse the HTTP request and return the HTTP method and path
+*/
+
 use std::thread; // thread module 
 use core::time::Duration; // time module
 
@@ -14,6 +18,7 @@ pub fn parse_request(buffer: &[u8]) -> (HttpMethod, &str) {
     // Implement parsing logic here to extract method and path from the buffer
 
     // match the buffer with the request method and path and return tuple of HttpMethod and path
+    // b'' is a byte string literal wihch is a sequence of bytes
     match buffer {
         _ if buffer.starts_with(b"GET / HTTP/1.1\r\n") => (HttpMethod::GET, "index.html"),
         _ if buffer.starts_with(b"GET /sleep HTTP/1.1\r\n") => {
