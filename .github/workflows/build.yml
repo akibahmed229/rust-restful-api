@@ -1,10 +1,10 @@
 name: Build and Test
 
-on: 
+on:
   push:
-    branches: [ "main"]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
@@ -13,8 +13,8 @@ jobs:
   checks:
     runs-on: ubuntu-latest
 
-      steps:
-      - name:  Clone the repository
+    steps:
+      - name: Clone the repository
         uses: actions/checkout@v3
 
       - name: Build
