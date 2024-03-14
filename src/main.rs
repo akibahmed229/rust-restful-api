@@ -45,7 +45,7 @@ fn main() {
 }
 
 fn handle_connecton(mut stream: TcpStream) {
-    let mut buffer = [0; 2048]; // buffer to store the data
+    let mut buffer = [0; 2048]; // buffer to store the data (e.g., request, response, file content, etc.)
 
     // read the data from the stream and store it in the buffer
     stream.read(&mut buffer).unwrap();     
@@ -64,6 +64,6 @@ fn handle_connecton(mut stream: TcpStream) {
 
     println!(
         "Request: {}",
-        String::from_utf8_lossy(&buffer[..])
+        String::from_utf8_lossy(&buffer[..]) // convert the buffer to a string and print the request
     ); // print the request
 }
