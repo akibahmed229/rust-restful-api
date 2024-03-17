@@ -5,14 +5,11 @@
     The handler function then processes the request and sends the response back to the client.
 */
 
-use std::net::{TcpListener, TcpStream}; // listens for incoming TCP connections
-use std::io::prelude::*; // brings in the read and write traits
+use std::net::TcpListener; // listens for incoming TCP connections
 
 // custom modules
 use crate::lib::lib::ThreadPool; // file system module
-use router::router::HttpMethod;
-use router::router::parse_request;
-use crate::controllers::controller::{handle_delete_request, handle_get_request, handle_invalid_request, handle_post_request, handle_put_request};
+use router::router::handle_connecton;
 
 // thread pool
 mod lib {
@@ -42,28 +39,4 @@ fn main() {
             handle_connecton(stream); // handle the connection in a separate thread
         });
     }
-}
-
-fn handle_connecton(mut stream: TcpStream) {
-    let mut buffer = [0; 2048]; // buffer to store the data (e.g., request, response, file content, etc.)
-
-    // read the data from the stream and store it in the buffer
-    stream.read(&mut buffer).unwrap();     
-
-    // parse the request to get the method (GET,POST,PUT,DELETE) and path
-    let ( method , path ) = parse_request(&buffer);
-
-    // match the request method and call the appropriate handler function
-    match method {
-        HttpMethod::GET => handle_get_request(stream, path),
-        HttpMethod::POST => handle_post_request(stream, path, &buffer),
-        HttpMethod::PUT => handle_put_request(stream, path, &buffer),
-        HttpMethod::DELETE => handle_delete_request(stream, path),
-        _ => handle_invalid_request(stream, path)
-    }
-
-    println!(
-        "Request: {}",
-        String::from_utf8_lossy(&buffer[..]) // convert the buffer to a string and print the request
-    ); // print the request
 }

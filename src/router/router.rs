@@ -2,8 +2,10 @@
     Router module to parse the HTTP request and return the HTTP method and path
 */
 
-use std::thread; // thread module 
-use core::time::Duration; // time module
+use std::net::TcpStream; // listens for incoming TCP connections
+use std::io::prelude::*; // brings in the read and write traits
+
+use crate::controllers::controller::{ parse_request, handle_delete_request, handle_get_request, handle_invalid_request, handle_post_request, handle_put_request};
 
 pub enum HttpMethod {
     GET,
@@ -13,21 +15,26 @@ pub enum HttpMethod {
     INVALID,
 }
 
-// Function to parse HTTP method and path from the request
-pub fn parse_request(buffer: &[u8]) -> (HttpMethod, &str) {
-    // Implement parsing logic here to extract method and path from the buffer
+pub fn handle_connecton(mut stream: TcpStream) {
+    let mut buffer = [0; 2048]; // buffer to store the data (e.g., request, response, file content, etc.)
 
-    // match the buffer with the request method and path and return tuple of HttpMethod and path
-    // b'' is a byte string literal wihch is a sequence of bytes
-    match buffer {
-        _ if buffer.starts_with(b"GET / HTTP/1.1\r\n") => (HttpMethod::GET, "index.html"),
-        _ if buffer.starts_with(b"GET /sleep HTTP/1.1\r\n") => {
-            thread::sleep(Duration::from_secs(5));
-            (HttpMethod::GET, "index.html")
-        },
-        _ if buffer.starts_with(b"POST / HTTP/1.1\r\n") => (HttpMethod::POST, "index.html"),
-        _ if buffer.starts_with(b"PUT / HTTP/1.1\r\n") => (HttpMethod::PUT, "index.html"),
-        _ if buffer.starts_with(b"DELETE / HTTP/1.1\r\n") => (HttpMethod::DELETE, "index.html"),
-        _ => (HttpMethod::INVALID, "404.html")
+    // read the data from the stream and store it in the buffer
+    stream.read(&mut buffer).unwrap();     
+
+    // parse the request to get the method (GET,POST,PUT,DELETE) and path
+    let ( method , path ) = parse_request(&buffer);
+
+    // match the request method and call the appropriate handler function
+    match method {
+        HttpMethod::GET => handle_get_request(stream, path),
+        HttpMethod::POST => handle_post_request(stream, path, &buffer),
+        HttpMethod::PUT => handle_put_request(stream, path, &buffer),
+        HttpMethod::DELETE => handle_delete_request(stream, path),
+        _ => handle_invalid_request(stream, path)
     }
+
+    println!(
+        "Request: {}",
+        String::from_utf8_lossy(&buffer[..]) // convert the buffer to a string and print the request
+    ); // print the request
 }
